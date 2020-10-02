@@ -19,7 +19,7 @@ const {
 
 
 // Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static( 'public'));
 app.use('/peerjs',PeerServer);
 
 
@@ -31,6 +31,15 @@ const botName = 'Admin Bot';
 // Run when Client Connects
 // ? listening to the event i.e. connection
 io.on('connection',(socket)=>{
+  socket.on('join-room', (roomId, userId) =>{
+    socket.join(roomId);
+    socket.broadcast.emit('user-connected',userId);
+    
+    socket.on('disconnect',()=>{
+      socket.broadcast.emit('user-disconnected',userId)
+    })
+
+})
 
 
     socket.on('joinRoom', ({ username, room }) => {
@@ -46,8 +55,9 @@ io.on('connection',(socket)=>{
     socket.broadcast.to(user.room).emit('message',formatMessage(botName,`${user.username} has joined the chat`));
       //for videocall
     socket.on('videocall',({username,room})=>{
+      console.log(uuidV4);
       roomname=room;
-      io.to(user.room).emit('message',formatMessage(username,`<a target='_blank' href="/videocall/${room}">click Here to join videocall </a>`))
+      io.to(user.room).emit('message',formatMessage(username,`<a target='_blank' href="/${uuidV4()}">click Here to join videocall </a>`))
       console.log(roomname);
     })
 
@@ -86,9 +96,9 @@ io.on('connection',(socket)=>{
 
 })
 app.set('view engine', 'ejs');
-app.get(`/videocall/:roomnm`,(req,res)=>{
+app.get(`/:roomid`,(req,res)=>{
     const roomid = req.params.roomnm
-  res.render('video',{roomname :roomid})
+  res.render('videocall',{roomId :roomid})
   
 })
 // app.get('/videocall/:videoid',(req,res)=>{
