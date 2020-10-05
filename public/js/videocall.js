@@ -2,6 +2,7 @@ const socket = io("/");
 
 const videoGrid = document.getElementById("video-grid");
 const btnTheme = document.querySelector("#theme");
+const btnTheme2 = document.querySelector("#theme2");
 const canvas = document.getElementById("canvas");
 const photos = document.getElementById("photos");
 const phototBtn = document.getElementById("photot-btn");
@@ -109,6 +110,7 @@ function connectToNewUser(userId, stream) {
   //  call an user with a certain id and sending them our audio and video stream
   const call = myPeer.call(userId, stream);
   const Video = document.createElement("video");
+  
   Video.id = "peerVideo";
   // Video.classList.add('mx-3');
   // Video.classList.add('my-3');
@@ -125,6 +127,9 @@ function connectToNewUser(userId, stream) {
 // this function tell the video object to use that stream
 function addVideoStream(video, stream) {
   // to play our video
+  if(!video){
+    alert('please check your network')
+  }
   video.srcObject = stream;
 
   video.addEventListener("loadedmetadata", () => {
@@ -186,7 +191,7 @@ function takePicture() {
     const img = document.createElement("img");
     img.classList.add("mx-2");
     img.classList.add("my-2");
-
+    img.style.margin = "5px auto "
     // Set img src
     img.setAttribute("src", imgUrl);
 
@@ -213,15 +218,31 @@ clearBtn.addEventListener("click", function (e) {
 //   changing the theme to light to dark
 btnTheme.addEventListener("click", () => {
   var element = document.body;
-  element.classList.toggle("dark-mode");
-  btnTheme.classList.toggle("btn-mode");
+  element.style.backgroundColor = "#212529"
+  
+  
+  if(document.getElementById('theme2').style.display === "none"){
+    document.getElementById('theme').style.display = "none";
+    document.getElementById('theme2').style.display = "inherit";
+   
+    console.log("sun");
+  } 
 });
+document.getElementById('theme2').addEventListener("click",()=>{
+  var element = document.body;
+  element.style.backgroundColor = "whitesmoke"
+  document.getElementById('theme2').style.display = "none"
+    document.getElementById('theme').style.display = "inherit";
+    document.getElementById('theme').style.color = "#212529 !important";
+    console.log("moon");
+})
 
 // -----------------------------adding mute unmute button---------------
 
 // mute or unmute our video
 const muteUnmute = () => {
   console.log(myVideoStream);
+ 
   const enabled = myVideoStream.getAudioTracks()[0].enabled;
   if (enabled) {
     myVideoStream.getAudioTracks()[0].enabled = false;
@@ -235,26 +256,29 @@ const muteUnmute = () => {
 // for muting our video
 const setMuteButton = () => {
   const html = `
-      <i class="fa fa-microphone"></i>
-      <span>Mute</span>
+      <i onclick="muteUnmute()" class="material-icons icns">mic</i>
+      <span>mute</span>
+      
     `;
-  document.querySelector(".main__mute_button").innerHTML = html;
+  document.querySelector(".mute").innerHTML = html;
 };
 
 // for unmuting our video
 
 const setUnmuteButton = () => {
   const html = `
-      <i class="unmute fa fa-microphone-slash"></i>
-      <span class="unmute">Unmute</span>
+  <i onclick="muteUnmute()" class="material-icons stop  icns">mic_off</i>
+  <span>unmute</span>
+      
     `;
-  document.querySelector(".main__mute_button").innerHTML = html;
+  document.querySelector(".mute").innerHTML = html;
 };
 
 //   -------------------adding pausa and play video------------
 
 const playStop = () => {
   console.log("object");
+  
   let enabled = myVideoStream.getVideoTracks()[0].enabled;
   if (enabled) {
     myVideoStream.getVideoTracks()[0].enabled = false;
@@ -267,18 +291,18 @@ const playStop = () => {
 
 const setStopVideo = () => {
   const html = `
-      <i class="fas fa-video"></i>
+      <i onclick="playStop()" class="material-icons icns">videocam</i>
       <span >Stop Video</span>
     `;
-  document.querySelector(".main__video_button").innerHTML = html;
+  document.querySelector(".vdo").innerHTML = html;
 };
 
 const setPlayVideo = () => {
   const html = `
-    <i class="stop fas fa-video-slash"></i>
+    <i onclick="playStop()" class="stop material-icons  icns">videocam_off</i>
       <span class="stop">Play Video</span>
     `;
-  document.querySelector(".main__video_button").innerHTML = html;
+  document.querySelector(".vdo").innerHTML = html;
 };
 
 //   ending the meeting
